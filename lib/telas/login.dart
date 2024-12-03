@@ -11,7 +11,6 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
 
-  // Função para fazer o login
   Future<void> login() async {
     if (emailController.text.isEmpty || senhaController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -22,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost/meuapp/processa_login.php'), // Altere o endpoint se necessário
+        Uri.parse('http://localhost/meuapp/processa_login.php'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: {
           'email': emailController.text,
@@ -30,15 +29,12 @@ class _LoginPageState extends State<LoginPage> {
         },
       );
 
-      // Decodificar resposta JSON
       final data = json.decode(response.body);
 
       if (data['status'] == 'sucesso') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(data['message'])),
         );
-
-        // Redireciona para a tela de listagem após login bem-sucedido
         Navigator.pushNamed(context, '/read');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -49,44 +45,91 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao se conectar ao servidor.')),
       );
-      print('Erro de conexão: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login de Usuário')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            // Campo E-mail
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'E-mail'),
+      backgroundColor: Colors.grey[100],
+      body: Center(
+        child: SingleChildScrollView(
+          child: FractionallySizedBox(
+            widthFactor: 0.6, // Define que o card ocupará 60% da largura
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Logo ou título
+                    const Text(
+                      'WallBrick',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 128, 9),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Campo E-mail
+                    TextField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        labelText: 'E-mail',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Campo Senha
+                    TextField(
+                      controller: senhaController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Botão de Login
+                    ElevatedButton(
+                      onPressed: login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 255, 128, 9),
+                        minimumSize: const Size(double.infinity, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Entrar',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Botão para ir para a tela de cadastro
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/cadastro');
+                      },
+                      child: const Text(
+                        'Não tem conta? Cadastre-se',
+                        style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            // Campo Senha
-            TextField(
-              controller: senhaController,
-              decoration: const InputDecoration(labelText: 'Senha'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            // Botão de Login
-            ElevatedButton(
-              onPressed: login,
-              child: const Text('Login'),
-            ),
-            const SizedBox(height: 10),
-            // Botão para ir para a tela de cadastro
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cadastro');
-              },
-              child: const Text('Não tem conta? Cadastre-se'),
-            ),
-          ],
+          ),
         ),
       ),
     );

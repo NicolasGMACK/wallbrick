@@ -13,46 +13,24 @@ class _CadastroPageState extends State<CadastroPage> {
   final senhaController = TextEditingController();
   bool isLoading = false;
 
-  // Função de validação da senha
   String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) {
-      return 'A senha é obrigatória';
-    }
-    if (password.length < 8) {
-      return 'A senha deve ter pelo menos 8 caracteres';
-    }
-    if (!password.contains(RegExp(r'[A-Z]'))) {
-      return 'A senha deve conter pelo menos uma letra maiúscula';
-    }
-    if (!password.contains(RegExp(r'[a-z]'))) {
-      return 'A senha deve conter pelo menos uma letra minúscula';
-    }
-    if (!password.contains(RegExp(r'[0-9]'))) {
-      return 'A senha deve conter pelo menos um número';
-    }
-    if (!password.contains(RegExp(r'[!@#\$&*~]'))) {
-      return 'A senha deve conter pelo menos um caractere especial';
-    }
-    return null; // Senha válida
+    if (password == null || password.isEmpty) return 'A senha é obrigatória';
+    if (password.length < 8) return 'A senha deve ter pelo menos 8 caracteres';
+    if (!password.contains(RegExp(r'[A-Z]'))) return 'Deve conter uma letra maiúscula';
+    if (!password.contains(RegExp(r'[a-z]'))) return 'Deve conter uma letra minúscula';
+    if (!password.contains(RegExp(r'[0-9]'))) return 'Deve conter um número';
+    if (!password.contains(RegExp(r'[!@#\$&*~]'))) return 'Deve conter um caractere especial';
+    return null;
   }
 
-  // Função de validação do email
   String? validateEmail(String? email) {
-    if (email == null || email.isEmpty) {
-      return 'O email é obrigatório';
-    }
-    final emailRegex = RegExp(
-      r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
-    );
-    if (!emailRegex.hasMatch(email)) {
-      return 'Por favor, insira um email válido';
-    }
-    return null; // Email válido
+    if (email == null || email.isEmpty) return 'O email é obrigatório';
+    final emailRegex = RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+$');
+    if (!emailRegex.hasMatch(email)) return 'Por favor, insira um email válido';
+    return null;
   }
 
-  // Função para cadastrar o usuário
   Future<void> cadastrar() async {
-    // Verifica campos vazios e validações
     if (nomeController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('O nome é obrigatório')),
@@ -62,17 +40,13 @@ class _CadastroPageState extends State<CadastroPage> {
 
     final emailErro = validateEmail(emailController.text);
     if (emailErro != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(emailErro)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(emailErro)));
       return;
     }
 
     final senhaErro = validatePassword(senhaController.text);
     if (senhaErro != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(senhaErro)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(senhaErro)));
       return;
     }
 
@@ -91,30 +65,21 @@ class _CadastroPageState extends State<CadastroPage> {
         },
       );
 
-      try {
-        final data = json.decode(response.body);
-        if (data['status'] == 'sucesso') {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data['message'])),
-          );
-          // Redireciona para a tela de login
-          Navigator.pushNamed(context, '/login');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(data['message'])),
-          );
-        }
-      } catch (e) {
+      final data = json.decode(response.body);
+      if (data['status'] == 'sucesso') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro ao processar resposta do servidor.')),
+          SnackBar(content: Text(data['message'])),
         );
-        print('Erro de JSON: $e\nResposta: ${response.body}');
+        Navigator.pushNamed(context, '/login');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'])),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao se conectar ao servidor.')),
       );
-      print('Erro de conexão: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -125,45 +90,99 @@ class _CadastroPageState extends State<CadastroPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cadastro de Usuário')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            // Campo Nome
-            TextField(
-              controller: nomeController,
-              decoration: const InputDecoration(labelText: 'Nome'),
+      backgroundColor: Colors.grey[100],
+      body: Center(
+        child: SingleChildScrollView(
+          child: FractionallySizedBox(
+            widthFactor: 0.6,
+            child: Card(
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Título
+                    const Text(
+                      'Cadastro WallBrick',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 255, 128, 9),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Campo Nome
+                    TextField(
+                      controller: nomeController,
+                      decoration: InputDecoration(
+                        labelText: 'Nome',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Campo E-mail
+                    TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        labelText: 'E-mail',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Campo Senha
+                    TextField(
+                      controller: senhaController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // Botão de Cadastro
+                    isLoading
+                        ? const CircularProgressIndicator()
+                        : ElevatedButton(
+                            onPressed: cadastrar,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 255, 128, 9), // Replace 'primary' with 'backgroundColor'
+                              minimumSize: const Size(double.infinity, 48),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'Cadastrar',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                    const SizedBox(height: 10),
+                    // Botão para voltar à tela de login
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text(
+                        'Já tem conta? Faça login',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            // Campo E-mail
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'E-mail'),
-              keyboardType: TextInputType.emailAddress, // Teclado específico para email
-            ),
-            // Campo Senha
-            TextField(
-              controller: senhaController,
-              decoration: const InputDecoration(labelText: 'Senha'),
-              obscureText: true, // Oculta a senha digitada
-            ),
-            const SizedBox(height: 20),
-            // Botão de Cadastro com indicador de carregamento
-            isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: cadastrar,
-                    child: const Text('Cadastrar'),
-                  ),
-            const SizedBox(height: 10),
-            // Botão para voltar à tela de login
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-              child: const Text('Já tem conta? Faça login'),
-            ),
-          ],
+          ),
         ),
       ),
     );
