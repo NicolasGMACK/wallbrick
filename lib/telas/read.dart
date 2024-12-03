@@ -141,14 +141,31 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
-        },
-        child: const Icon(Icons.add),
-        tooltip: 'Cadastrar Produto',
-        backgroundColor: const Color.fromARGB(255, 255, 128, 9),
-      ),
+      floatingActionButton: Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    FloatingActionButton(
+      heroTag: 'cadastrarProduto',
+      onPressed: () {
+        Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
+      },
+      child: const Icon(Icons.add),
+      tooltip: 'Cadastrar Produto',
+      backgroundColor: const Color.fromARGB(255, 255, 128, 9),
+    ),
+    const SizedBox(height: 16), // Espaço entre os botões
+    FloatingActionButton(
+      heroTag: 'cadastrarFornecedor',
+      onPressed: () {
+        Navigator.pushNamed(context, '/cadastrarFornecedor');
+      },
+      child: const Icon(Icons.business),
+      tooltip: 'Cadastrar Fornecedor',
+      backgroundColor: const Color.fromARGB(255, 0, 150, 136),
+    ),
+  ],
+),
+
     );
   }
 
