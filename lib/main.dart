@@ -3,6 +3,7 @@ import 'telas/cadastro.dart';
 import 'telas/login.dart';
 import 'telas/read.dart'; // Importa a tela de listagem de produtos
 import 'telas/cadastrar_produto.dart';
+import 'telas/cadastrar_fornecedor.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
   '/cadastro': (context) => CadastroPage(),
   '/read': (context) => ListaProdutosPage(),
   '/cadastrar': (context) => CadastrarProdutoPage(),
+   '/cadastrarFornecedor': (context) => CadastrarFornecedorPage(),
 },
 
     );
