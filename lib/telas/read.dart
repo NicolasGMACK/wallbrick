@@ -49,7 +49,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
-            color: Colors.orange,
+            color: const Color.fromARGB(255, 255, 128, 9),
             child: const Text(
               'WallBrick',
               textAlign: TextAlign.center,
@@ -147,95 +147,227 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         },
         child: const Icon(Icons.add),
         tooltip: 'Cadastrar Produto',
-        backgroundColor: Colors.orange,
+        backgroundColor: const Color.fromARGB(255, 255, 128, 9),
       ),
     );
   }
 
   void editarProduto(Map produto) {
-    final nomeController = TextEditingController(text: produto['PRO_VAR_NOME']);
-    final quantidadeController = TextEditingController(text: produto['PRO_INT_QUANTIDADE'].toString());
-    final precoController = TextEditingController(text: produto['PRO_DEC_PRECO'].toString());
-    final medidaController = TextEditingController(text: produto['PRO_VAR_MEDIDA']);
+  final nomeController = TextEditingController(text: produto['PRO_VAR_NOME']);
+  final quantidadeController = TextEditingController(text: produto['PRO_INT_QUANTIDADE'].toString());
+  final precoController = TextEditingController(text: produto['PRO_DEC_PRECO'].toString());
+  final medidaController = TextEditingController(text: produto['PRO_VAR_MEDIDA']);
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Editar Produto'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nomeController,
-                  decoration: const InputDecoration(labelText: 'Nome'),
+  showDialog(
+    context: context,
+    builder: (context) {
+  return Dialog(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 100), // Ajuste aqui
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.5, // Define 50% da largura da tela
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+      ),
+
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Faixa superior laranja
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 128, 9),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
                 ),
-                TextField(
-                  controller: quantidadeController,
-                  decoration: const InputDecoration(labelText: 'Quantidade'),
-                  keyboardType: TextInputType.number,
+                child: const Text(
+                  'Editar Produto',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-                TextField(
-                  controller: medidaController,
-                  decoration: const InputDecoration(labelText: 'Medida'),
+              ),
+              // Conteúdo do popup
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: nomeController,
+                      decoration: InputDecoration(
+                        labelText: 'Nome',
+                        labelStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: quantidadeController,
+                      decoration: InputDecoration(
+                        labelText: 'Quantidade',
+                        labelStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      keyboardType: TextInputType.number,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: medidaController,
+                      decoration: InputDecoration(
+                        labelText: 'Medida',
+                        labelStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: precoController,
+                      decoration: InputDecoration(
+                        labelText: 'Preço',
+                        labelStyle: const TextStyle(color: Colors.black),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancelar'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.grey[600],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            atualizarProduto(
+                              int.parse(produto['PRO_INT_COD']),
+                              nomeController.text,
+                              int.parse(quantidadeController.text),
+                              medidaController.text,
+                              double.tryParse(precoController.text) ?? 0.0,
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Salvar'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: const Color.fromARGB(255, 255, 128, 9),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: precoController,
-                  decoration: const InputDecoration(labelText: 'Preço'),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                atualizarProduto(
-                  int.parse(produto['PRO_INT_COD']),
-                  nomeController.text,
-                  int.parse(quantidadeController.text),
-                  medidaController.text,
-                  double.tryParse(precoController.text) ?? 0.0,
-                );
-                Navigator.pop(context);
-              },
-              child: const Text('Salvar'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
-  void confirmarExclusao(Map produto) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar Exclusão'),
-          content: Text('Tem certeza que deseja excluir o produto "${produto['PRO_VAR_NOME']}"?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                excluirProduto(produto);
-              },
-              child: const Text('Excluir'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
+void confirmarExclusao(Map produto) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    insetPadding: const EdgeInsets.symmetric(horizontal: 100), // Ajuste aqui
+    child: Container(
+      width: MediaQuery.of(context).size.width * 0.5, // Define 50% da largura da tela
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+      ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 128, 9),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: const Text(
+                  'Confirmar Exclusão',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(
+                      'Tem certeza que deseja excluir o produto "${produto['PRO_VAR_NOME']}"?',
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancelar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            excluirProduto(produto);
+                          },
+                          child: const Text('Excluir'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
 
   void atualizarProduto(int id, String nome, int quantidade, String medida, double preco) async {
     try {
