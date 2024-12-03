@@ -243,17 +243,14 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                     ),
                     const SizedBox(height: 24),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        ElevatedButton(
+                        TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text('Cancelar'),
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.grey[600],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            backgroundColor: Colors.white,
                           ),
                         ),
                         ElevatedButton(
@@ -270,10 +267,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                           child: const Text('Salvar'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: const Color.fromARGB(255, 255, 128, 9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            backgroundColor: const Color.fromARGB(255, 255, 128, 9),                            
                           ),
                         ),
                       ],
@@ -342,6 +336,10 @@ void confirmarExclusao(Map produto) {
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: const Text('Cancelar'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            backgroundColor: Colors.white,
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {

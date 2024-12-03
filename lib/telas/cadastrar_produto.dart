@@ -56,11 +56,14 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      
       backgroundColor: Colors.grey[200],
-      body: Center(
+      body: Center(        
         child: Card(
           elevation: 8,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
