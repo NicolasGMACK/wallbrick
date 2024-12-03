@@ -8,9 +8,8 @@ class ListaProdutosPage extends StatefulWidget {
 }
 
 class _ListaProdutosPageState extends State<ListaProdutosPage> {
-  List produtos = []; // Lista para armazenar os produtos
+  List produtos = [];
 
-  // Função para buscar os produtos do PHP
   Future<void> buscarProdutos() async {
     try {
       final response = await http.get(
@@ -32,11 +31,127 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao se conectar ao servidor')),
       );
-      print('Erro: $e');
     }
   }
 
-  // Função para abrir o popup de edição
+  @override
+  void initState() {
+    super.initState();
+    buscarProdutos();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            color: Colors.orange,
+            child: const Text(
+              'WallBrick',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            color: Colors.grey[200],
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: Row(
+              children: const [
+                Expanded(child: Text('Nome', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                Expanded(child: Text('Quantidade', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                Expanded(child: Text('Medida', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                Expanded(child: Text('Preço', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                Text('Ações', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          const Divider(height: 0, thickness: 1),
+          Expanded(
+            child: produtos.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Nenhum produto cadastrado.',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: produtos.length,
+                    itemBuilder: (context, index) {
+                      final produto = produtos[index];
+                      return Column(
+                        children: [
+                          Container(
+                            color: index % 2 == 0 ? Colors.white : Colors.grey[100],
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    produto['PRO_VAR_NOME'],
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    produto['PRO_INT_QUANTIDADE'].toString(),
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    produto['PRO_VAR_MEDIDA'],
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    'R\$ ${produto['PRO_DEC_PRECO']}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.edit, color: Colors.grey, size: 24),
+                                      onPressed: () => editarProduto(produto),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete, color: Colors.grey, size: 24),
+                                      onPressed: () => confirmarExclusao(produto),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Divider(height: 0, thickness: 1),
+                        ],
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
+        },
+        child: const Icon(Icons.add),
+        tooltip: 'Cadastrar Produto',
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
   void editarProduto(Map produto) {
     final nomeController = TextEditingController(text: produto['PRO_VAR_NOME']);
     final quantidadeController = TextEditingController(text: produto['PRO_INT_QUANTIDADE'].toString());
@@ -80,13 +195,13 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             ElevatedButton(
               onPressed: () {
                 atualizarProduto(
-                  int.parse(produto['PRO_INT_COD']), // Conversão explícita
+                  int.parse(produto['PRO_INT_COD']),
                   nomeController.text,
                   int.parse(quantidadeController.text),
-                  medidaController.text, // Passando medida para o update
-                  double.tryParse(precoController.text) ?? 0.0, // Garantindo que o preço seja um double válido
+                  medidaController.text,
+                  double.tryParse(precoController.text) ?? 0.0,
                 );
-                Navigator.pop(context); // Fecha o diálogo
+                Navigator.pop(context);
               },
               child: const Text('Salvar'),
             ),
@@ -96,103 +211,6 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     );
   }
 
-  // Função para atualizar o produto no servidor
-  void atualizarProduto(int id, String nome, int quantidade, String medida, double preco) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost/meuapp/processa_update.php'),
-        headers: {
-          'Content-Type': 'application/json', // Adicione cabeçalho para enviar como JSON
-        },
-        body: jsonEncode({
-          'id': id.toString(),
-          'nome': nome,
-          'quantidade': quantidade.toString(),
-          'medida': medida, // Adicionando a medida
-          'preco': preco.toString(),
-        }),
-      );
-
-      final data = json.decode(response.body);
-
-      if (data['status'] == 'sucesso') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Produto atualizado com sucesso')),
-        );
-        buscarProdutos(); // Atualiza a lista após a edição
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao se conectar ao servidor')),
-      );
-      print('Erro: $e');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    buscarProdutos();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Lista de Produtos')),
-      body: produtos.isEmpty
-          ? Center(
-              child: const Text(
-                'Nenhum produto cadastrado.',
-                style: TextStyle(fontSize: 18),
-              ),
-            )
-          : ListView.builder(
-              itemCount: produtos.length,
-              itemBuilder: (context, index) {
-                final produto = produtos[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text(produto['PRO_VAR_NOME']),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${produto['PRO_INT_QUANTIDADE']} ${produto['PRO_VAR_MEDIDA']}'),
-                        Text('Preço: R\$ ${produto['PRO_DEC_PRECO'].toString()}'),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => editarProduto(produto),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => confirmarExclusao(produto),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
-        },
-        child: const Icon(Icons.add),
-        tooltip: 'Cadastrar Produto',
-      ),
-    );
-  }
-
-  // Função para confirmar a exclusão de um produto
   void confirmarExclusao(Map produto) {
     showDialog(
       context: context,
@@ -207,11 +225,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context); // Fecha o diálogo
-                excluirProduto(produto); // Exclui o produto
+                Navigator.pop(context);
+                excluirProduto(produto);
               },
               child: const Text('Excluir'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
             ),
           ],
         );
@@ -219,12 +237,44 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
     );
   }
 
-  // Função para excluir um produto
+  void atualizarProduto(int id, String nome, int quantidade, String medida, double preco) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost/meuapp/processa_update.php'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id': id.toString(),
+          'nome': nome,
+          'quantidade': quantidade.toString(),
+          'medida': medida,
+          'preco': preco.toString(),
+        }),
+      );
+
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'sucesso') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'Produto atualizado com sucesso')),
+        );
+        buscarProdutos();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao se conectar ao servidor')),
+      );
+    }
+  }
+
   void excluirProduto(Map produto) async {
     try {
       final response = await http.post(
         Uri.parse('http://localhost/meuapp/processa_delete.php'),
-        body: {'id': int.parse(produto['PRO_INT_COD']).toString()}, // Conversão explícita
+        body: {'id': int.parse(produto['PRO_INT_COD']).toString()},
       );
 
       final data = json.decode(response.body);
@@ -233,7 +283,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(data['message'] ?? 'Produto excluído com sucesso')),
         );
-        buscarProdutos(); // Atualiza a lista após a exclusão
+        buscarProdutos();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(data['message'] ?? 'Erro ao excluir produto')),
@@ -243,7 +293,6 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao se conectar ao servidor')),
       );
-      print('Erro: $e');
     }
   }
 }
