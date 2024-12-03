@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login', // Define a tela inicial
+      initialRoute: '/login', //  inicial
       routes: {
   '/login': (context) => LoginPage(),
   '/cadastro': (context) => CadastroPage(),
