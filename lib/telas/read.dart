@@ -121,7 +121,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    produto['FORNECEDOR_NOME'] ?? 'Desconhecido',
+                                    produto['FBR_VAR_NOME'] ?? 'Desconhecido',
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ),

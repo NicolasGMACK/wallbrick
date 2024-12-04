@@ -185,7 +185,7 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
       : fornecedores.map<DropdownMenuItem<String>>((fornecedor) {
           return DropdownMenuItem<String>(
             value: fornecedor['FBR_VAR_CNPJ']?.toString(),
-            child: Text(fornecedor['FOR_NOME'] ?? 'Sem nome'),
+            child: Text(fornecedor['FBR_VAR_NOME'] ?? 'Sem nome'),
           );
         }).toList(),
   onChanged: (value) {
