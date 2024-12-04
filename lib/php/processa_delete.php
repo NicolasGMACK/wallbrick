@@ -20,23 +20,27 @@ if ($conn->connect_error) {
     die(json_encode(["status" => "erro", "message" => "Erro ao se conectar ao banco: " . $conn->connect_error]));
 }
 
-// Verificar se os dados foram enviados corretamente
-if (!isset($_POST['id']) || empty($_POST['id'])) {
-    echo json_encode(["status" => "erro", "message" => "ID do produto é obrigatório."]);
+// Receber o corpo da requisição (JSON)
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+
+// Verificar se o código do produto foi enviado corretamente
+if (!isset($data['codigo']) || empty($data['codigo']) || !is_numeric($data['codigo'])) {
+    echo json_encode(["status" => "erro", "message" => "Código do produto é obrigatório e deve ser um número."]);
     exit;
 }
 
-// Sanitizar e obter o ID do produto
-$id = (int) $_POST['id'];
+// Sanitizar o código do produto
+$codigo = (int) $data['codigo']; // Garantindo que o valor seja um inteiro
 
 // Deletar o produto do banco
-$sql = "DELETE FROM tbl_produto WHERE PRO_INT_COD = $id";
+$sql = "DELETE FROM tbl_produto WHERE PRO_INT_COD = $codigo";
 
 if ($conn->query($sql) === TRUE) {
     if ($conn->affected_rows > 0) {
         echo json_encode(["status" => "sucesso", "message" => "Produto deletado com sucesso."]);
     } else {
-        echo json_encode(["status" => "erro", "message" => "Nenhum produto encontrado com o ID informado."]);
+        echo json_encode(["status" => "erro", "message" => "Nenhum produto encontrado com o código informado."]);
     }
 } else {
     echo json_encode(["status" => "erro", "message" => "Erro ao deletar o produto: " . $conn->error]);

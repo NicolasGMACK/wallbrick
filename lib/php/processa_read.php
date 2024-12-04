@@ -21,17 +21,18 @@ if ($conn->connect_error) {
 }
 
 // Consulta para buscar os produtos
-$sql = "SELECT 
-            p.PRO_VAR_NOME,
-            p.PRO_INT_QUANTIDADE,
-            p.PRO_VAR_MEDIDA,
-            p.PRO_DEC_PRECO,
+$sql = "SELECT
+            p.PRO_INT_COD,
+            p.PRO_VAR_NOME, 
+            p.PRO_INT_QUANTIDADE, 
+            p.PRO_VAR_MEDIDA, 
+            p.PRO_DEC_PRECO, 
             f.FBR_VAR_NOME
-        FROM
+        FROM 
             tbl_produto p
-        LEFT JOIN
-            tbl_fabricante f
-        ON
+        LEFT JOIN 
+            tbl_fabricante f 
+        ON 
             p.FBR_VAR_CNPJ = f.FBR_VAR_CNPJ";
 
 $result = $conn->query($sql);
