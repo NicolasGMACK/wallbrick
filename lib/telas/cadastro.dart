@@ -96,6 +96,7 @@ class _CadastroPageState extends State<CadastroPage> {
           child: FractionallySizedBox(
             widthFactor: 0.6,
             child: Card(
+               color: Colors.white,
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

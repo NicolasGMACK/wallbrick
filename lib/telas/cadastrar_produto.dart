@@ -174,14 +174,20 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
                 ),
                 const SizedBox(height: 12),
                 // Dropdown de fornecedores
-                DropdownButtonFormField<String>(
+               DropdownButtonFormField<String>(
   value: fornecedorSelecionado,
   decoration: const InputDecoration(
     labelText: 'Fornecedor',
     labelStyle: TextStyle(color: Colors.black),
   ),
+  dropdownColor: Colors.white, // Define o fundo das opções como branco
   items: fornecedores.isEmpty
-      ? [DropdownMenuItem<String>(value: null, child: Text('Nenhum fornecedor disponível'))]
+      ? [
+          DropdownMenuItem<String>(
+            value: null,
+            child: Text('Nenhum fornecedor disponível'),
+          )
+        ]
       : fornecedores.map<DropdownMenuItem<String>>((fornecedor) {
           return DropdownMenuItem<String>(
             value: fornecedor['FBR_VAR_CNPJ']?.toString(),
@@ -194,6 +200,7 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
     });
   },
 ),
+
 
 
                 const SizedBox(height: 20),

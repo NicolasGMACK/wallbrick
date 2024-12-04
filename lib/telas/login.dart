@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
           child: FractionallySizedBox(
             widthFactor: 0.6, // Define que o card ocupará 60% da largura
             child: Card(
+               color: Colors.white, // Define explicitamente a cor de fundo 
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),

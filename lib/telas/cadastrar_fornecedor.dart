@@ -134,6 +134,7 @@ class _CadastrarFornecedorPageState extends State<CadastrarFornecedorPage> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
+              color: Colors.white,
               elevation: 8,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Container(
@@ -179,12 +180,16 @@ class _CadastrarFornecedorPageState extends State<CadastrarFornecedorPage> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: cadastrarFornecedor,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 0, 150, 136),
-                      ),
-                      child: const Text('Cadastrar'),
-                    ),
+  onPressed: cadastrarFornecedor,
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 0, 150, 136),
+  ),
+  child: const Text(
+    'Cadastrar',
+    style: TextStyle(color: Colors.white), // Define a cor do texto como branco
+  ),
+),
+
                   ],
                 ),
               ),
@@ -193,78 +198,86 @@ class _CadastrarFornecedorPageState extends State<CadastrarFornecedorPage> {
         ),
         // Lista de fornecedores (lado direito)
         Expanded(
-          flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 8,
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    color: const Color.fromARGB(255, 0, 150, 136),
-                    child: const Text(
-                      'Fornecedores Cadastrados',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                  ),
-                  Expanded(
-                    child: fornecedores.isEmpty
-                        ? const Center(child: Text('Nenhum fornecedor cadastrado.'))
-                        : ListView.builder(
-                            itemCount: fornecedores.length,
-                            itemBuilder: (context, index) {
-                              final fornecedor = fornecedores[index];
-                              return Container(
-                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: index % 2 == 0 ? Colors.white : Colors.grey[100],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Text(
-                                        fornecedor['FBR_VAR_NOME'],
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'CNPJ: ${fornecedor['FBR_VAR_CNPJ']}',
-                                            style: const TextStyle(fontSize: 16),
-                                          ),
-                                          Text(
-                                            'Telefone: ${fornecedor['FBR_VAR_FONE']}',
-                                            style: const TextStyle(fontSize: 16),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
-                                      onPressed: () => excluirFornecedor(fornecedor),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              ),
+  flex: 2,
+  child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Card(
+      elevation: 8,
+      color: Colors.white, // Fundo branco para o Card
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 0, 150, 136),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            child: const Text(
+              'Fornecedores Cadastrados',
+              style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-        ),
+          Expanded(
+            child: fornecedores.isEmpty
+                ? const Center(child: Text('Nenhum fornecedor cadastrado.'))
+                : ListView.builder(
+                    itemCount: fornecedores.length,
+                    itemBuilder: (context, index) {
+                      final fornecedor = fornecedores[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: index % 2 == 0  // Índices pares (0, 2, 4, 6...) serão mais cinza
+                              ? Colors.grey[200]  // Cor mais cinza
+                              : Colors.white,  // Índices ímpares (1, 3, 5...) serão brancos
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                fornecedor['FBR_VAR_NOME'],
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'CNPJ: ${fornecedor['FBR_VAR_CNPJ']}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                    'Telefone: ${fornecedor['FBR_VAR_FONE']}',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => excluirFornecedor(fornecedor),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
       ],
     ),
   );
