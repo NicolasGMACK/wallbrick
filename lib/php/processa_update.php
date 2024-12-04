@@ -35,17 +35,27 @@ $quantidade = intval($dados['quantidade']);
 $medida = $conn->real_escape_string($dados['medida']);
 $preco = floatval($dados['preco']);
 
-// Atualizar o produto no banco
+// Utilizando prepared statements para evitar injeção SQL
 $sql = "UPDATE tbl_produto 
-        SET PRO_VAR_NOME = '$nome', PRO_INT_QUANTIDADE = $quantidade, PRO_VAR_MEDIDA = '$medida', PRO_DEC_PRECO = $preco 
-        WHERE PRO_INT_COD = $id";
+        SET PRO_VAR_NOME = ?, PRO_INT_QUANTIDADE = ?, PRO_VAR_MEDIDA = ?, PRO_DEC_PRECO = ? 
+        WHERE PRO_INT_COD = ?";
 
-if ($conn->query($sql) === TRUE) {
-    echo json_encode(["status" => "sucesso", "message" => "Produto atualizado com sucesso"]);
-} else {
-    echo json_encode(["status" => "erro", "message" => "Erro ao atualizar produto: " . $conn->error]);
+$stmt = $conn->prepare($sql);
+if ($stmt === false) {
+    die(json_encode(["status" => "erro", "message" => "Erro na preparação da consulta: " . $conn->error]));
 }
 
-// Fechar conexão
+// Bind dos parâmetros
+$stmt->bind_param("sisdi", $nome, $quantidade, $medida, $preco, $id);
+
+// Executa a consulta
+if ($stmt->execute()) {
+    echo json_encode(["status" => "sucesso", "message" => "Produto atualizado com sucesso"]);
+} else {
+    echo json_encode(["status" => "erro", "message" => "Erro ao atualizar produto: " . $stmt->error]);
+}
+
+// Fechar a declaração e a conexão
+$stmt->close();
 $conn->close();
 ?>

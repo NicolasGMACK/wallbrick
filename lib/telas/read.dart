@@ -419,34 +419,36 @@ Future<void> excluirProduto(int codigoProduto) async {
 
 
   void atualizarProduto(int codProduto, String nome, int quantidade, String medida, double preco) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost/meuapp/processa_update.php'),
-        body: {
-          'PRO_INT_COD': codProduto.toString(),
-          'PRO_VAR_NOME': nome,
-          'PRO_INT_QUANTIDADE': quantidade.toString(),
-          'PRO_VAR_MEDIDA': medida,
-          'PRO_DEC_PRECO': preco.toString(),
-        },
-      );
+  try {
+    final response = await http.post(
+      Uri.parse('http://localhost/meuapp/processa_update.php'),
+      headers: {'Content-Type': 'application/json'}, // Informar que o body é JSON
+      body: json.encode({
+        'id': codProduto,
+        'nome': nome,
+        'quantidade': quantidade,
+        'medida': medida,
+        'preco': preco,
+      }),
+    );
 
-      final data = json.decode(response.body);
+    final data = json.decode(response.body);
 
-      if (data['status'] == 'sucesso') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'])),
-        );
-        buscarProdutos();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
-        );
-      }
-    } catch (e) {
+    if (data['status'] == 'sucesso') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao atualizar produto')),
+        SnackBar(content: Text(data['message'] ?? 'Produto atualizado com sucesso')),
+      );
+      buscarProdutos();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
       );
     }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Erro ao atualizar produto')),
+    );
   }
+}
+
 }
