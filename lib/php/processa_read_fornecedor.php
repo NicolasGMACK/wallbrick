@@ -20,33 +20,21 @@ if ($conn->connect_error) {
     die(json_encode(["status" => "erro", "message" => "Erro ao se conectar ao banco: " . $conn->connect_error]));
 }
 
-// Consulta para buscar os produtos
-$sql = "SELECT 
-            p.PRO_VAR_NOME,
-            p.PRO_INT_QUANTIDADE,
-            p.PRO_VAR_MEDIDA,
-            p.PRO_DEC_PRECO,
-            f.FBR_VAR_NOME AS FORNECEDOR
-        FROM
-            tbl_produto p
-        LEFT JOIN
-            tbl_fabricante f
-        ON
-            p.PRO_VAR_CNPJ = f.FBR_VAR_CNPJ";
-
+// Consulta para buscar os fornecedores
+$sql = "SELECT FBR_VAR_CNPJ, FBR_VAR_NOME, FBR_VAR_FONE FROM tbl_fabricante";
 $result = $conn->query($sql);
 
 // Verifica se há registros
 if ($result->num_rows > 0) {
-    $usuarios = [];
+    $fornecedores = [];
     while ($row = $result->fetch_assoc()) {
-        $usuarios[] = $row; // Adiciona cada registro ao array
+        $fornecedores[] = $row; // Adiciona cada registro ao array
     }
 
     // Retorna os dados em formato JSON
-    echo json_encode(["status" => "sucesso", "data" => $usuarios]);
+    echo json_encode(["status" => "sucesso", "data" => $fornecedores]);
 } else {
-    echo json_encode(["status" => "sucesso", "data" => [], "message" => "Nenhum produto encontrado."]);
+    echo json_encode(["status" => "sucesso", "data" => [], "message" => "Nenhum fornecedor encontrado."]);
 }
 
 // Fechar conexão

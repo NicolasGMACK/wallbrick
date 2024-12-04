@@ -70,6 +70,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                 Expanded(child: Text('Quantidade', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 Expanded(child: Text('Medida', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 Expanded(child: Text('Preço', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+                Expanded(child: Text('Fornecedor', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                 Text('Ações', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
@@ -118,6 +119,12 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                 ),
+                                Expanded(
+                                  child: Text(
+                                    produto['FORNECEDOR_NOME'] ?? 'Desconhecido',
+                                    style: const TextStyle(fontSize: 16),
+                                  ),
+                                ),
                                 Row(
                                   children: [
                                     IconButton(
@@ -142,293 +149,197 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         ],
       ),
       floatingActionButton: Column(
-  mainAxisSize: MainAxisSize.min,
-  children: [
-    FloatingActionButton(
-      heroTag: 'cadastrarProduto',
-      onPressed: () {
-        Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
-      },
-      child: const Icon(Icons.add),
-      tooltip: 'Cadastrar Produto',
-      backgroundColor: const Color.fromARGB(255, 255, 128, 9),
-    ),
-    const SizedBox(height: 16), // Espaço entre os botões
-    FloatingActionButton(
-      heroTag: 'cadastrarFornecedor',
-      onPressed: () {
-        Navigator.pushNamed(context, '/cadastrarFornecedor');
-      },
-      child: const Icon(Icons.business),
-      tooltip: 'Cadastrar Fornecedor',
-      backgroundColor: const Color.fromARGB(255, 0, 150, 136),
-    ),
-  ],
-),
-
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'cadastrarProduto',
+            onPressed: () {
+              Navigator.pushNamed(context, '/cadastrar').then((_) => buscarProdutos());
+            },
+            child: const Icon(Icons.add),
+            tooltip: 'Cadastrar Produto',
+            backgroundColor: const Color.fromARGB(255, 255, 128, 9),
+          ),
+          const SizedBox(height: 16), // Espaço entre os botões
+          FloatingActionButton(
+            heroTag: 'cadastrarFornecedor',
+            onPressed: () {
+              Navigator.pushNamed(context, '/cadastrarFornecedor');
+            },
+            child: const Icon(Icons.business),
+            tooltip: 'Cadastrar Fornecedor',
+            backgroundColor: const Color.fromARGB(255, 0, 150, 136),
+          ),
+        ],
+      ),
     );
   }
 
   void editarProduto(Map produto) {
-  final nomeController = TextEditingController(text: produto['PRO_VAR_NOME']);
-  final quantidadeController = TextEditingController(text: produto['PRO_INT_QUANTIDADE'].toString());
-  final precoController = TextEditingController(text: produto['PRO_DEC_PRECO'].toString());
-  final medidaController = TextEditingController(text: produto['PRO_VAR_MEDIDA']);
+    final nomeController = TextEditingController(text: produto['PRO_VAR_NOME']);
+    final quantidadeController = TextEditingController(text: produto['PRO_INT_QUANTIDADE'].toString());
+    final precoController = TextEditingController(text: produto['PRO_DEC_PRECO'].toString());
+    final medidaController = TextEditingController(text: produto['PRO_VAR_MEDIDA']);
 
-  showDialog(
-    context: context,
-    builder: (context) {
-  return Dialog(
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    insetPadding: const EdgeInsets.symmetric(horizontal: 100), // Ajuste aqui
-    child: Container(
-      width: MediaQuery.of(context).size.width * 0.5, // Define 50% da largura da tela
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-      ),
-
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Faixa superior laranja
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 128, 9),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 100), // Ajuste aqui
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.5, // Define 50% da largura da tela
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Faixa superior laranja
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 128, 9),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Editar Produto',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Editar Produto',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                // Conteúdo do popup
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: nomeController,
+                        decoration: InputDecoration(
+                          labelText: 'Nome',
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: quantidadeController,
+                        decoration: InputDecoration(
+                          labelText: 'Quantidade',
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: medidaController,
+                        decoration: InputDecoration(
+                          labelText: 'Medida',
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: precoController,
+                        decoration: InputDecoration(
+                          labelText: 'Preço',
+                          labelStyle: const TextStyle(color: Colors.black),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: const Color.fromARGB(255, 0, 0, 0),
+                              backgroundColor: Colors.white,
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              atualizarProduto(
+                                int.parse(produto['PRO_INT_COD']),
+                                nomeController.text,
+                                int.parse(quantidadeController.text),
+                                medidaController.text,
+                                double.tryParse(precoController.text) ?? 0.0,
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Salvar'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              // Conteúdo do popup
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: nomeController,
-                      decoration: InputDecoration(
-                        labelText: 'Nome',
-                        labelStyle: const TextStyle(color: Colors.black),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: quantidadeController,
-                      decoration: InputDecoration(
-                        labelText: 'Quantidade',
-                        labelStyle: const TextStyle(color: Colors.black),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      keyboardType: TextInputType.number,
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: medidaController,
-                      decoration: InputDecoration(
-                        labelText: 'Medida',
-                        labelStyle: const TextStyle(color: Colors.black),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: precoController,
-                      decoration: InputDecoration(
-                        labelText: 'Preço',
-                        labelStyle: const TextStyle(color: Colors.black),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancelar'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            backgroundColor: Colors.white,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            atualizarProduto(
-                              int.parse(produto['PRO_INT_COD']),
-                              nomeController.text,
-                              int.parse(quantidadeController.text),
-                              medidaController.text,
-                              double.tryParse(precoController.text) ?? 0.0,
-                            );
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Salvar'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color.fromARGB(255, 255, 128, 9),                            
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
-
-void confirmarExclusao(Map produto) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    insetPadding: const EdgeInsets.symmetric(horizontal: 100), // Ajuste aqui
-    child: Container(
-      width: MediaQuery.of(context).size.width * 0.5, // Define 50% da largura da tela
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-      ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 128, 9),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  'Confirmar Exclusão',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Text(
-                      'Tem certeza que deseja excluir o produto "${produto['PRO_VAR_NOME']}"?',
-                      style: const TextStyle(fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancelar'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: const Color.fromARGB(255, 0, 0, 0),
-                            backgroundColor: Colors.white,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            excluirProduto(produto);
-                          },
-                          child: const Text('Excluir'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-
-
-  void atualizarProduto(int id, String nome, int quantidade, String medida, double preco) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost/meuapp/processa_update.php'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'id': id.toString(),
-          'nome': nome,
-          'quantidade': quantidade.toString(),
-          'medida': medida,
-          'preco': preco.toString(),
-        }),
-      );
-
-      final data = json.decode(response.body);
-
-      if (data['status'] == 'sucesso') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Produto atualizado com sucesso')),
         );
-        buscarProdutos();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao se conectar ao servidor')),
-      );
-    }
+      },
+    );
   }
 
-  void excluirProduto(Map produto) async {
+  void confirmarExclusao(Map produto) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Excluir Produto'),
+          content: const Text('Tem certeza que deseja excluir este produto?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                excluirProduto(produto['PRO_INT_COD']);
+                Navigator.pop(context);
+              },
+              child: const Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void excluirProduto(int codProduto) async {
     try {
       final response = await http.post(
         Uri.parse('http://localhost/meuapp/processa_delete.php'),
-        body: {'id': int.parse(produto['PRO_INT_COD']).toString()},
+        body: {'PRO_INT_COD': codProduto.toString()},
       );
 
       final data = json.decode(response.body);
 
       if (data['status'] == 'sucesso') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Produto excluído com sucesso')),
+          SnackBar(content: Text(data['message'])),
         );
         buscarProdutos();
       } else {
@@ -438,7 +349,39 @@ void confirmarExclusao(Map produto) {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao se conectar ao servidor')),
+        const SnackBar(content: Text('Erro ao excluir produto')),
+      );
+    }
+  }
+
+  void atualizarProduto(int codProduto, String nome, int quantidade, String medida, double preco) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost/meuapp/processa_update.php'),
+        body: {
+          'PRO_INT_COD': codProduto.toString(),
+          'PRO_VAR_NOME': nome,
+          'PRO_INT_QUANTIDADE': quantidade.toString(),
+          'PRO_VAR_MEDIDA': medida,
+          'PRO_DEC_PRECO': preco.toString(),
+        },
+      );
+
+      final data = json.decode(response.body);
+
+      if (data['status'] == 'sucesso') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'])),
+        );
+        buscarProdutos();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'Erro ao atualizar produto')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao atualizar produto')),
       );
     }
   }

@@ -13,11 +13,52 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
   final medidaController = TextEditingController();
   final precoController = TextEditingController();
 
+  List fornecedores = [];
+  String? fornecedorSelecionado;
+
+  @override
+  void initState() {
+    super.initState();
+    carregarFornecedores();
+  }
+
+  Future<void> carregarFornecedores() async {
+  try {
+    final response = await http.get(
+      Uri.parse('http://localhost/meuapp/processa_read_fornecedor.php'),
+    );
+
+    final data = json.decode(response.body);
+
+    if (data['status'] == 'sucesso' && data['data'] is List) {
+      setState(() {
+        fornecedores = data['data'];
+      });
+    } else {
+      setState(() {
+        fornecedores = [];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(data['message'] ?? 'Nenhum fornecedor encontrado')),
+      );
+    }
+  } catch (e) {
+    setState(() {
+      fornecedores = [];
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Erro ao carregar fornecedores do servidor')),
+    );
+  }
+}
+
+
   Future<void> cadastrarProduto() async {
     if (nomeController.text.isEmpty ||
         quantidadeController.text.isEmpty ||
         medidaController.text.isEmpty ||
-        precoController.text.isEmpty) {
+        precoController.text.isEmpty ||
+        fornecedorSelecionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, preencha todos os campos!')),
       );
@@ -33,6 +74,7 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
           'quantidade': quantidadeController.text,
           'medida': medidaController.text,
           'preco': precoController.text,
+          'cnpj_fornecedor': fornecedorSelecionado, // Usar CNPJ como identificador
         }),
       );
 
@@ -52,18 +94,14 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao se conectar ao servidor.')),
       );
-      print('Erro de conexão: $e');
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      
       backgroundColor: Colors.grey[200],
-      body: Center(        
+      body: Center(
         child: Card(
           elevation: 8,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -99,10 +137,10 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
                 // Campos de entrada
                 TextField(
                   controller: nomeController,
-                  style: const TextStyle(color: Colors.black), // Cor do texto digitado
+                  style: const TextStyle(color: Colors.black),
                   decoration: const InputDecoration(
                     labelText: 'Nome do Produto',
-                    labelStyle: TextStyle(color: Colors.black), // Cor do rótulo
+                    labelStyle: TextStyle(color: Colors.black),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -134,6 +172,30 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
                   ),
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 12),
+                // Dropdown de fornecedores
+                DropdownButtonFormField<String>(
+  value: fornecedorSelecionado,
+  decoration: const InputDecoration(
+    labelText: 'Fornecedor',
+    labelStyle: TextStyle(color: Colors.black),
+  ),
+  items: fornecedores.isEmpty
+      ? [DropdownMenuItem<String>(value: null, child: Text('Nenhum fornecedor disponível'))]
+      : fornecedores.map<DropdownMenuItem<String>>((fornecedor) {
+          return DropdownMenuItem<String>(
+            value: fornecedor['FBR_VAR_CNPJ']?.toString(),
+            child: Text(fornecedor['FOR_NOME'] ?? 'Sem nome'),
+          );
+        }).toList(),
+  onChanged: (value) {
+    setState(() {
+      fornecedorSelecionado = value;
+    });
+  },
+),
+
+
                 const SizedBox(height: 20),
                 // Botões de ação
                 Row(
@@ -146,18 +208,17 @@ class _CadastrarProdutoPageState extends State<CadastrarProdutoPage> {
                       ),
                       child: const Text(
                         'Cancelar',
-                        style: TextStyle(color: Colors.black), // Texto do botão em preto
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: cadastrarProduto,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 255, 128, 9),
-                        
                       ),
                       child: const Text(
                         'Cadastrar',
-                        style: TextStyle(color: Colors.white), // Texto do botão em preto
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ],

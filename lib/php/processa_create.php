@@ -1,4 +1,4 @@
-<?php
+<?php 
 header('Content-Type: application/json');
 
 // Permitir requisições de qualquer origem
@@ -29,16 +29,31 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit;
 }
 
+// Verificar se todos os campos necessários estão presentes
+if (!isset($data['nome'], $data['quantidade'], $data['medida'], $data['preco'], $data['cnpj_fornecedor'])) {
+    echo json_encode(["status" => "erro", "message" => "Campos obrigatórios ausentes."]);
+    exit;
+}
 
 // Sanitizar os dados recebidos
 $nome = $conn->real_escape_string($data['nome']);
 $quantidade = (int)$data['quantidade'];
 $medida = $conn->real_escape_string($data['medida']);
 $preco = (float)$data['preco'];
+$cnpj_fornecedor = $conn->real_escape_string($data['cnpj_fornecedor']);
+
+// Verificar se o fornecedor existe
+$fornecedorQuery = "SELECT FBR_VAR_CNPJ FROM tbl_fabricante WHERE FBR_VAR_CNPJ = '$cnpj_fornecedor'";
+$fornecedorResult = $conn->query($fornecedorQuery);
+
+if ($fornecedorResult->num_rows === 0) {
+    echo json_encode(["status" => "erro", "message" => "Fornecedor com o CNPJ $cnpj_fornecedor não encontrado."]);
+    exit;
+}
 
 // Inserir os dados no banco
-$sql = "INSERT INTO tbl_produto (PRO_VAR_NOME, PRO_INT_QUANTIDADE, PRO_VAR_MEDIDA, PRO_DEC_PRECO) 
-        VALUES ('$nome', $quantidade, '$medida', $preco)";
+$sql = "INSERT INTO tbl_produto (PRO_VAR_NOME, PRO_INT_QUANTIDADE, PRO_VAR_MEDIDA, PRO_DEC_PRECO, FBR_VAR_CNPJ) 
+        VALUES ('$nome', $quantidade, '$medida', $preco, '$cnpj_fornecedor')";
 
 if ($conn->query($sql) === TRUE) {
     echo json_encode(["status" => "sucesso", "message" => "Produto cadastrado com sucesso."]);
