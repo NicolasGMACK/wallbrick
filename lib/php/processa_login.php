@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $senha = $_POST['senha'];
 
     // Consultar o banco de dados
-    $stmt = $conn->prepare("SELECT USU_VAR_SENHA FROM tbl_usuario WHERE USU_VAR_EMAIL = ?");
+    $stmt = $conn->prepare("SELECT CLI_VAR_SENHA FROM tbl_cliente WHERE CLI_VAR_EMAIL = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();

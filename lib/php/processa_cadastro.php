@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Hash da senha
 
     // Preparar e executar a inserção no banco de dados
-    $stmt = $conn->prepare("INSERT INTO tbl_usuario (USU_VAR_NOME, USU_VAR_EMAIL, USU_VAR_SENHA) VALUES (?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO tbl_cliente (CLI_VAR_NOME, CLI_VAR_EMAIL, CLI_VAR_SENHA) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $nome, $email, $senha);
 
     if ($stmt->execute()) {
