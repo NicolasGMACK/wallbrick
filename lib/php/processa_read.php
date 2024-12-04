@@ -26,13 +26,13 @@ $sql = "SELECT
             p.PRO_INT_QUANTIDADE,
             p.PRO_VAR_MEDIDA,
             p.PRO_DEC_PRECO,
-            f.FBR_VAR_NOME AS FORNECEDOR
+            f.FBR_VAR_NOME
         FROM
             tbl_produto p
         LEFT JOIN
             tbl_fabricante f
         ON
-            p.PRO_VAR_CNPJ = f.FBR_VAR_CNPJ";
+            p.FBR_VAR_CNPJ = f.FBR_VAR_CNPJ";
 
 $result = $conn->query($sql);
 
