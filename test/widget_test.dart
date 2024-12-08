@@ -1,30 +1,116 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:projeto/main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget( MyApp());
+  group('Testes de integração com o PHP', () {
+    const endpoint = 'http://localhost/meuapp/test/crud_test.php';
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Teste para criar fornecedor
+    test('Teste de criação de fornecedor', () async {
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "acao": "criar_fornecedor",
+          "cnpj": "12345678000199",
+          "nome": "Fornecedor Teste",
+          "telefone": "(11) 98765-4321",
+        }),
+      );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      print('Resposta criação fornecedor: ${response.body}');
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      // Validar resposta
+      expect(response.statusCode, 200);
+
+      final responseBody = jsonDecode(response.body);
+      expect(responseBody['status'], equals('sucesso'));
+      expect(responseBody['message'],
+          contains('Fornecedor cadastrado com sucesso.'));
+    });
+
+    // Teste para criar produto
+    test('Teste de criação de produto', () async {
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "acao": "criar_produto",
+          "id": 999,
+          "nome": "Produto Teste",
+          "quantidade": 10,
+          "medida": "kg",
+          "preco": 25.50,
+          "cnpj_fornecedor": "12345678000199",
+        }),
+      );
+
+      print('Resposta criação produto: ${response.body}');
+
+      expect(response.statusCode, 200);
+
+      final responseBody = jsonDecode(response.body);
+      expect(responseBody['status'], equals('sucesso'));
+    });
+
+    // Teste para atualizar produto
+    test('Teste de atualização de produto', () async {
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "acao": "atualizar_produto",
+          "id": 999,
+          "nome": "Produto Atualizado",
+          "quantidade": 20,
+          "medida": "unidade",
+          "preco": 30.50,
+        }),
+      );
+
+      print('Resposta atualização produto: ${response.body}');
+
+      expect(response.statusCode, 200);
+
+      final responseBody = jsonDecode(response.body);
+      expect(responseBody['status'], equals('sucesso'));
+    });
+
+    // Teste para deletar produto
+    test('Teste de exclusão de produto', () async {
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "acao": "deletar_produto",
+          "codigo": 999,
+        }),
+      );
+
+      print('Resposta exclusão produto: ${response.body}');
+
+      expect(response.statusCode, 200);
+
+      final responseBody = jsonDecode(response.body);
+      expect(responseBody['status'], equals('sucesso'));
+    });
+    test('Teste de exclusão de fornecedor', () async {
+      final response = await http.post(
+        Uri.parse(endpoint),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          "acao": "deletar_fornecedor",
+          "cnpj": "12345678000199",
+        }),
+      );
+
+      print('Resposta exclusão fornecedor: ${response.body}');
+
+      expect(response.statusCode, 200);
+
+      final responseBody = jsonDecode(response.body);
+      expect(responseBody['status'], equals('sucesso'));
+    });
   });
 }
