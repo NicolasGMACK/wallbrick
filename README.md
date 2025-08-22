@@ -1,16 +1,27 @@
-# projeto
+# WallBrickk
 
-A new Flutter project.
+WallBric é um sistema de gerenciamento desenvolvido em **Flutter**, voltado para empresas de lojas de material de construção. Ele oferece funcionalidades básicas de **CRUD (Create, Read, Update, Delete)** para gerenciar produtos, clientes, fornecedores e outras informações essenciais para o dia a dia de uma loja.
 
-## Getting Started
+## Funcionalidades
 
-This project is a starting point for a Flutter application.
+- Cadastro de produtos, clientes e fornecedores.
+- Edição e atualização de registros existentes.
+- Consulta e listagem de dados em tempo real.
+- Exclusão segura de registros.
+- Interface intuitiva e responsiva para dispositivos móveis.0
 
-A few resources to get you started if this is your first Flutter project:
+## Tecnologias Utilizadas
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Flutter** – Desenvolvimento da interface e lógica do aplicativo.
+- **Dart** – Linguagem principal do projeto.
+- **Banco de dados** (a definir pelo projeto, ex: SQLite, Firebase) – Armazenamento dos dados.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Começando
+
+Para executar o projeto localmente, siga os passos abaixo:
+
+1. Certifique-se de ter o Flutter instalado:  
+   [Guia de instalação do Flutter](https://docs.flutter.dev/get-started/install)
+2. Clone este repositório:  
+   ```bash
+   git clone https://github.com/seuusuario/wallbric.git
